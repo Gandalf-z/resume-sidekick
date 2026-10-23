@@ -1,0 +1,10 @@
+{
+  "name": "resume-sidecar-v1.2.0",
+  "version": "1.2.0",
+  "private": true,
+  "type": "module",
+  "description": "本地简历字段快捷复制与 PDF 解析 Chrome/Edge 扩展",
+  "scripts": {
+    "test": "node tests/parser-smoke.mjs && node tests/pdf-extraction-smoke.mjs"
+  }
+}

@@ -1,0 +1,4 @@
+PDF.js is distributed under Apache License 2.0.
+Project: https://github.com/mozilla/pdf.js
+Version bundled for this local extension: 6.4.299
+No document content is sent to a remote service by this extension.

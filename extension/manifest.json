@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "求职随身简历",
+  "version": "1.2.0",
+  "description": "单页快捷复制简历字段，支持多选复制、本地 PDF 解析与导入前预览。",
+  "permissions": ["storage", "activeTab", "scripting", "sidePanel", "clipboardWrite"],
+  "action": { "default_title": "打开求职随身简历" },
+  "background": { "service_worker": "service-worker.js" },
+  "side_panel": { "default_path": "sidepanel.html" },
+  "web_accessible_resources": [{
+    "resources": ["lib/pdf.worker.mjs", "lib/cmaps/*", "lib/standard_fonts/*"],
+    "matches": ["<all_urls>"]
+  }]
+}

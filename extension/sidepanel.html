@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>求职随身简历</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">简</div>
+        <div class="brand-copy">
+          <h1>求职随身简历 <span class="version">V1.2.0</span></h1>
+          <p>一页查找 · 点一下复制 · 多项一起复制</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="pdfBtn" class="btn btn-primary" type="button">导入 PDF</button>
+        <button id="exportBtn" class="btn btn-quiet" type="button" title="导出本地备份">备份</button>
+        <label class="btn btn-quiet file-button" for="importFile">导入</label>
+        <input id="importFile" type="file" accept=".json,application/json" hidden>
+        <input id="pdfFile" type="file" accept=".pdf,application/pdf" hidden>
+      </div>
+    </header>
+
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+
+    <section class="toolbar" aria-label="搜索和筛选">
+      <label class="search-box">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input id="searchInput" type="search" placeholder="搜手机号、项目名、技术栈、工作内容…">
+        <button id="clearSearchBtn" class="clear-search" type="button" aria-label="清空搜索">×</button>
+      </label>
+      <div id="groupFilters" class="filters" aria-label="资料分类"></div>
+      <div class="selection-bar">
+        <div class="selection-copy">
+          <strong id="selectedCount">已选 0 项</strong>
+          <span id="visibleCount" class="muted">显示 37 条资料</span>
+        </div>
+        <div class="selection-actions">
+          <button id="selectVisibleBtn" class="btn btn-quiet btn-small" type="button">全选当前结果</button>
+          <button id="clearSelectionBtn" class="btn btn-quiet btn-small" type="button">清空</button>
+          <button id="copySelectedBtn" class="btn btn-primary btn-small" type="button" disabled>复制已选</button>
+        </div>
+      </div>
+      <div class="content-mode">
+        <span>经历复制版本</span>
+        <div class="mode-switch" role="group" aria-label="经历复制版本">
+          <button class="mode-button active" data-mode="short" type="button">精简版</button>
+          <button class="mode-button" data-mode="long" type="button">详细版</button>
+        </div>
+        <button id="addBtn" class="btn btn-quiet btn-small" type="button">＋ 新增资料</button>
+      </div>
+    </section>
+
+    <section class="quick-hint">
+      <span class="hint-icon">↗</span>
+      <span>单击「复制」就能复制该字段；勾选多个字段后点「复制已选」，会按字段名称整理到一起。</span>
+    </section>
+
+    <main id="cardsContainer" class="cards-container">
+      <div class="loading">正在读取本机简历资料…</div>
+    </main>
+
+    <footer class="footnote">
+      <span class="privacy-dot"></span>
+      简历和 PDF 都在本机解析，不会上传到服务器。
+    </footer>
+  </div>
+
+  <dialog id="editDialog" class="dialog">
+    <form id="editForm">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">资料编辑</p><h2 id="editDialogTitle">编辑资料</h2></div>
+        <button id="closeEditBtn" class="icon-button" type="button" aria-label="关闭">×</button>
+      </div>
+      <input id="editId" type="hidden">
+      <label class="form-field"><span>资料名称</span><input id="editTitle" type="text" maxlength="120" required></label>
+      <label class="form-field"><span>补充说明</span><input id="editSubtitle" type="text" maxlength="200"></label>
+      <label class="form-field"><span>分类</span>
+        <select id="editGroup">
+          <option value="basic">基础信息</option><option value="work">工作经历</option>
+          <option value="project">项目经历</option><option value="ai">AI 应用</option>
+          <option value="answer">面试问答</option><option value="custom">自定义</option>
+        </select>
+      </label>
+      <label class="form-field"><span>精简版内容</span><textarea id="editShort" rows="4"></textarea></label>
+      <label class="form-field"><span>详细版内容</span><textarea id="editLong" rows="6"></textarea></label>
+      <label class="form-field"><span>结构化字段（JSON）</span><textarea id="editFields" rows="5" spellcheck="false"></textarea><small>支持“字段/值”格式，也支持公司、职位、项目名称、技术栈等多个字段。</small></label>
+      <div id="editError" class="form-error" role="alert"></div>
+      <div class="dialog-actions"><button id="cancelEditBtn" class="btn btn-quiet" type="button">取消</button><button class="btn btn-primary" type="submit">保存资料</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="importDialog" class="dialog dialog-small">
+    <div class="dialog-heading">
+      <div><p class="eyebrow">恢复资料</p><h2>确认导入备份</h2></div>
+      <button id="closeImportBtn" class="icon-button" type="button" aria-label="关闭">×</button>
+    </div>
+    <p id="importSummary" class="dialog-description"></p>
+    <p class="dialog-description muted">同 ID 的资料会以备份内容更新；其他本地资料会保留。建议先导出一份当前备份。</p>
+    <div class="dialog-actions"><button id="cancelImportBtn" class="btn btn-quiet" type="button">取消</button><button id="confirmImportBtn" class="btn btn-primary" type="button">导入资料</button></div>
+  </dialog>
+
+  <dialog id="pdfDialog" class="dialog pdf-dialog">
+    <div class="dialog-heading">
+      <div><p class="eyebrow">本机解析 · 不上传文件</p><h2>导入 PDF 简历</h2></div>
+      <button id="closePdfBtn" class="icon-button" type="button" aria-label="关闭">×</button>
+    </div>
+    <div id="pdfFileMeta" class="pdf-file-meta"></div>
+    <label class="form-field"><span>提取的文字（可在这里修正）</span><textarea id="pdfText" rows="8" placeholder="选择 PDF 后，文字会显示在这里…"></textarea></label>
+    <div class="pdf-tools">
+      <button id="analyzePdfBtn" class="btn btn-quiet" type="button">重新识别内容</button>
+      <span id="pdfParseStatus" class="muted"></span>
+    </div>
+    <div class="pdf-preview-heading"><strong>导入预览</strong><span class="muted">取消勾选的内容不会导入；导入后仍可编辑。</span></div>
+    <div id="pdfDrafts" class="pdf-drafts"><div class="empty-list">先选择 PDF，再识别可导入的内容。</div></div>
+    <div class="dialog-actions sticky-dialog-actions"><button id="cancelPdfBtn" class="btn btn-quiet" type="button">取消</button><button id="confirmPdfBtn" class="btn btn-primary" type="button" disabled>导入勾选内容</button></div>
+  </dialog>
+
+  <script type="module" src="sidepanel.js"></script>
+</body>
+</html>

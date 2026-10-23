@@ -1,0 +1,19 @@
+# macOS / editors
+.DS_Store
+.AppleDouble
+._*
+.vscode/
+.idea/
+
+# Node and build output
+node_modules/
+dist/
+*.log
+
+# Secrets and local resume data
+.env
+.env.*
+!.env.example
+*resume-data*.json
+*resume-backup*.json
+chrome-storage/
