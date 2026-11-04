@@ -1,5 +1,6 @@
 import * as pdfjsLib from './lib/pdf.mjs';
 import { parseResumeText } from './resume-parser.mjs';
+import { createCareerSyncPayload } from './career-sync.mjs';
 
 'use strict';
 
@@ -375,6 +376,37 @@ async function toggleFavorite(itemId) {
   await saveState();
   renderAll();
   showStatus(item.favorite ? '已收藏这条资料。' : '已取消收藏。', 'success');
+}
+
+async function syncToCareerStudio() {
+  if (!items.length) {
+    showStatus('当前没有可同步的简历资料。请先导入或新增资料。', 'error');
+    return;
+  }
+  const button = $('syncCareerBtn');
+  button.disabled = true;
+  const original = button.textContent;
+  button.textContent = '同步中…';
+  try {
+    const response = await fetch('http://127.0.0.1:8787/api/career/import/sidekick', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'omit',
+      body: JSON.stringify(createCareerSyncPayload(items, '1.3.0'))
+    });
+    let result = {};
+    try { result = await response.json(); } catch (_) {}
+    if (!response.ok) throw new Error(result.detail || ('HTTP ' + response.status));
+    showStatus('同步完成：新增 ' + result.imported + ' 条，重复 ' + result.duplicates + ' 条，跳过 ' + result.skipped + ' 条。新增资料全部进入待审核，不会自动进入简历。', 'success');
+  } catch (error) {
+    const detail = String(error && error.message || error);
+    showStatus(detail.includes('Failed to fetch') || detail.includes('NetworkError')
+      ? '无法连接本机 OpportunityRadar。请先启动 http://127.0.0.1:8787，再重试同步。资料仍保留在 Sidekick。'
+      : '同步失败：' + detail + '。Sidekick 本地资料没有被删除或覆盖。', 'error');
+  } finally {
+    button.disabled = false;
+    button.textContent = original;
+  }
 }
 
 async function exportBackup() {
@@ -754,6 +786,7 @@ function setupEvents() {
     });
   });
   $('addBtn').addEventListener('click', () => openEditor(null));
+  $('syncCareerBtn').addEventListener('click', syncToCareerStudio);
   $('exportBtn').addEventListener('click', exportBackup);
   $('importFile').addEventListener('change', handleImportFile);
   $('pdfBtn').addEventListener('click', () => $('pdfFile').click());
