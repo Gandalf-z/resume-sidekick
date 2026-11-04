@@ -1,10 +1,10 @@
 {
-  "name": "resume-sidecar-v1.2.0",
-  "version": "1.2.0",
+  "name": "resume-sidekick",
+  "version": "1.3.0",
   "private": true,
   "type": "module",
-  "description": "本地简历字段快捷复制与 PDF 解析 Chrome/Edge 扩展",
+  "description": "本地简历资料助手，支持 PDF 解析和 OpportunityRadar 职业档案同步",
   "scripts": {
-    "test": "node tests/parser-smoke.mjs && node tests/pdf-extraction-smoke.mjs"
+    "test": "node tests/parser-smoke.mjs && node tests/pdf-extraction-smoke.mjs && node tests/career-sync-smoke.mjs"
   }
 }

@@ -12,12 +12,13 @@
       <div class="brand">
         <div class="brand-mark">简</div>
         <div class="brand-copy">
-          <h1>求职随身简历 <span class="version">V1.2.0</span></h1>
+          <h1>求职随身简历 <span class="version">V1.3.0</span></h1>
           <p>一页查找 · 点一下复制 · 多项一起复制</p>
         </div>
       </div>
       <div class="header-actions">
         <button id="pdfBtn" class="btn btn-primary" type="button">导入 PDF</button>
+        <button id="syncCareerBtn" class="btn btn-quiet" type="button" title="将资料同步到 127.0.0.1:8787 的职业事实库">同步</button>
         <button id="exportBtn" class="btn btn-quiet" type="button" title="导出本地备份">备份</button>
         <label class="btn btn-quiet file-button" for="importFile">导入</label>
         <input id="importFile" type="file" accept=".json,application/json" hidden>
@@ -57,7 +58,7 @@
 
     <section class="quick-hint">
       <span class="hint-icon">↗</span>
-      <span>单击「复制」就能复制该字段；勾选多个字段后点「复制已选」，会按字段名称整理到一起。</span>
+      <span>单击「复制」就能复制该字段；也可以将本机资料同步到 OpportunityRadar，新增内容只进入待审核事实库。</span>
     </section>
 
     <main id="cardsContainer" class="cards-container">
@@ -66,7 +67,7 @@
 
     <footer class="footnote">
       <span class="privacy-dot"></span>
-      简历和 PDF 都在本机解析，不会上传到服务器。
+      简历和 PDF 在本机解析；只有点击“同步”时，资料才会发送到本机 OpportunityRadar（127.0.0.1），不会上传到公网服务。
     </footer>
   </div>
 
